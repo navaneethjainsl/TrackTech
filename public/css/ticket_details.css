@@ -1,0 +1,42 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-image: url(./pics/Untitled\ design.png);
+}
+
+.ticket-details-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.ticket-details {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.ticket-details p {
+    margin: 5px 0;
+}
+
+button {
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #555;
+}
