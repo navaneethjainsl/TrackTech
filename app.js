@@ -137,7 +137,7 @@ const Passenger = sequelize.define("passenger", {
         allowNull: true,
     },
     ph_no: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
         unique: true,
     },
@@ -221,6 +221,53 @@ app.get('/', (req, res) => {
     res.redirect('/loginsignup');
     // res.status(200).send('Hello World')
 });
+
+
+app.get('/loginsignup', async (req, res)=>{
+    res.render('loginsignup');
+});
+
+
+// Login User
+app.post('/login', async (req, res)=>{
+
+
+    sequelize.sync().then(() => {
+  
+        const newPass = Passenger.findOne({
+            where: {
+                username : req.body.username
+            }
+        }).then(async (user) => {
+        console.log(user);
+  
+        if(user && user.dataValues.password === req.body.password){
+  
+        //   await Login.create({
+        //     p_id: req.body.username,
+        //     start d_time: new Date(),
+        
+        //   });
+        
+          res.redirect('/choice');
+        }
+        else{
+          res.send('<h1>Incorrect username or password<h1>');
+  
+        }
+      }).catch((error) => {
+        console.error('Failed to retrieve data : ', error);
+      });
+
+      console.log("newPass");
+      console.log(newPass);
+  
+    }).catch((error) => {
+      console.error('Unable to create table : ', error);
+    });
+    
+  });
+
 
 app.listen(PORT, () => {
     console.log('Server is running on port 3000.');
