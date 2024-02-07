@@ -1,3 +1,7 @@
+*{
+    overflow: hidden;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -60,5 +64,17 @@ input {
     color: white;
     border: none;
     border-radius: 5px;
+    cursor: pointer;
+}
+
+.submit-button{
+    border: none;
+    outline: none; /* Optional: Removes outline on focus */
+    display: inline-block;
+    margin-top: 2vh;
+}
+
+.blue{
+    color: blue;
     cursor: pointer;
 }

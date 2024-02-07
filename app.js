@@ -302,7 +302,7 @@ app.post('/signup', (req, res) => {
     
         });
     
-        res.redirect('/home');
+        res.redirect('/login');
   
     }).catch((error) => {
         console.error('Unable to create user : ', error);

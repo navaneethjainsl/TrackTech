@@ -1,3 +1,7 @@
+*{
+    overflow: hidden;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -46,11 +50,23 @@ input {
     cursor: pointer;
 }
 
-button:hover {
+/* button:hover {
     background-color: #555;
-}
+} */
 
 /* Add background image */
 /* .signup-container {
     background-image:url(./pics/Untitled\ design.png);
 } */
+
+.submit-button{
+    border: none;
+    outline: none; /* Optional: Removes outline on focus */
+    display: inline-block;
+    margin-top: 2vh;
+}
+
+.blue{
+    color: blue;
+    cursor: pointer;
+}
