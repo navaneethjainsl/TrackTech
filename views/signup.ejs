@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup</title>
-    <link rel="stylesheet" href="signup.css">
+    <link rel="stylesheet" href="css/signup.css">
 </head>
 <body>
 
     <div class="signup-container">
         <h2>Sign Up</h2>
-        <form>
+        <form action="/signup" method="post">
             <label for="passenger-name">Passenger Name:</label>
-            <input type="text" id="passenger-name" name="passenger-name" required>
+            <input type="text" id="passenger-name" name="name" required>
 
             <label for="username">Username (in small letters):</label>
             <input type="text" id="username" name="username" required>
@@ -24,12 +24,15 @@
             <input type="password" id="password" name="password" required>
 
             <label for="phone">Phone Number:</label>
-            <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required>
+            <input type="tel" id="phone" name="ph_no" pattern="[0-9]{10}" required>
 
             <label for="dob">Date of Birth:</label>
             <input type="date" id="dob" name="dob" required>
 
-            <button type="submit">Sign Up</button>
+            <button class="button" type="submit">Sign Up</button>
+        </form>
+        <form action="/login" method="get">
+            <button type="submit" >Login</button>
         </form>
     </div>
 

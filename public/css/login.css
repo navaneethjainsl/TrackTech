@@ -21,7 +21,7 @@ h1 {
 }
 
 #background-container {
-    background-image: url(./pics/5356913.jpg); /* Replace with your background image URL */
+    background-image: url(../pics/5356913.jpg); /* Replace with your background image URL */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -54,7 +54,7 @@ input {
     border-radius: 5px;
 }
 
-button {
+.button {
     padding: 10px;
     background-color: #333;
     color: white;

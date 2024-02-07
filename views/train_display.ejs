@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Train Display</title>
-    <link rel="stylesheet" href="train_display.css">
+    <link rel="stylesheet" href="css/train_display.css">
 </head>
 <body>
 
@@ -24,26 +24,28 @@
             </thead>
             <tbody>
                 <!-- Example train rows -->
-                <tr>
-                    <td>A</td>
-                    <td>09:00 AM</td>
-                    <td>12:00 PM</td>
-                    <td>City A</td>
-                    <td>City B</td>
-                    <td>300</td>
-                    <td><button>Pay</button></td>
-                    
-                </tr>
-                <tr>
-                    <td>B</td>
-                    <td>02:00 PM</td>
-                    <td>05:00 PM</td>
-                    <td>City C</td>
-                    <td>City D</td>
-                    <td>400</td>
-                    <td><button>Pay</button></td>
-                   
-                </tr>
+                <%trains.forEach((train) => {%>
+                    <form action="/payment" method="post">
+                        <tr>
+                            <td><%=train.dataValues.tname%></td>
+                            <td><%=train.dataValues.arrival_time.toString().substring(16, 24)%></td>
+                            <td><%=train.dataValues.departure_time.toString().substring(16, 24)%></td>
+                            <td><%=places.from%></td>
+                            <td><%=places.to%></td>
+                            <td><%=train.dataValues.price%></td>
+
+                            <input type="hidden" name="tid" value=<%=train.dataValues.train_id%>>
+                            <input type="hidden" name="arrival_date" value=<%=JSON.stringify(train.dataValues.arrival_time)%>>
+                            <input type="hidden" name="departure_date" value=<%=JSON.stringify(train.dataValues.departure_time)%>>
+                            <input type="hidden" name="from" value=<%=places.from%>>
+                            <input type="hidden" name="to" value=<%=places.to%>>
+                            <input type="hidden" name="price" value=<%=train.dataValues.price%>>
+                            
+                            <td><button>Pay</button></td>
+                            
+                        </tr>
+                    </form>
+                <%})%>
                 <!-- Add more train rows here -->
             </tbody>
         </table>

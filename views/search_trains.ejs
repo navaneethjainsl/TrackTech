@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Trains</title>
-    <link rel="stylesheet" href="search_trains.css">
+    <link rel="stylesheet" href="css/search_trains.css">
 </head>
 <body>
 
     <div class="search-container">
         <h2>Search Trains</h2>
-        <form>
+        <form action="/trains" method="post">
             <div class="form-group">
                 <label for="from">From:</label>
                 <select id="from" name="from" required>
                     <option value="" disabled selected>Select origin</option>
-                    <option value="city1">City 1</option>
-                    <option value="city2">City 2</option>
-                    <option value="city3">City 3</option>
+                    <%stations.forEach((station) => {%>
+                    <option value=<%=station.dataValues.sname%>><%=station.dataValues.sname%></option>
+                    <%})%>
                     <!-- Add more cities as needed -->
                 </select>
             </div>
@@ -25,10 +25,10 @@
             <div class="form-group">
                 <label for="to">To:</label>
                 <select id="to" name="to" required>
-                    <option value="" disabled selected>Select destination</option>
-                    <option value="city1">City 1</option>
-                    <option value="city2">City 2</option>
-                    <option value="city3">City 3</option>
+                    <option value="" disabled selected>Select origin</option>
+                    <%stations.forEach((station) => {%>
+                    <option value=<%=station.dataValues.sname%>><%=station.dataValues.sname%></option>
+                    <%})%>
                 </select>
             </div>
             
@@ -38,3 +38,6 @@
             </div>
 
             <button type="submit">Search</button>
+        </form>
+    </div>
+</body>

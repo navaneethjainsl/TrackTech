@@ -4,19 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Details</title>
-    <link rel="stylesheet" href="ticket_details.css">
+    <link rel="stylesheet" href="css/ticket_details.css">
 </head>
 <body>
 
     <div class="ticket-details-container">
         <h2>Ticket Details</h2>
         <div class="ticket-details">
-            <p><strong>Train Name:</strong> A</p>
-            <p><strong>Departure Time:</strong> 09:00 AM</p>
-            <p><strong>Arrival Time:</strong> 12:00 PM</p>
-            <p><strong>From:</strong> City A</p>
-            <p><strong>To:</strong> City B</p>
-            <p><strong>Price:400</strong> City B</p>
+            <p><strong>Train Name:</strong> <%=train.tname%></p>
+            <p><strong>Departure Time:</strong> <%=train.arrival_time.toString().substring(16, 24)%></p>
+            <p><strong>Arrival Time:</strong> <%=train.departure_time.toString().substring(16, 24)%></p>
+            <p><strong>From:</strong> <%=ticket.from%></p>
+            <p><strong>To:</strong> <%=ticket.to%></p>
+            <p><strong>Price:</strong> <%=train.price%></p>
+            
+            
+            <p><strong>Book Date:</strong> <%=ticket.date%></p>
+            <p><strong>Book Time:</strong> <%=ticket.time%></p>
             <!-- Add more ticket details here -->
         </div>
         <button onclick="window.print()">Print Ticket</button>
