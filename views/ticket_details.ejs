@@ -7,24 +7,30 @@
     <link rel="stylesheet" href="css/ticket_details.css">
 </head>
 <body>
-
     <div class="ticket-details-container">
         <h2>Ticket Details</h2>
+
+    </div>
+
+    <%for(let i = ticket.length-1; i >= 0; i--){%>
+    <div class="ticket-details-container">
         <div class="ticket-details">
-            <p><strong>Train Name:</strong> <%=train.tname%></p>
-            <p><strong>Departure Time:</strong> <%=train.arrival_time.toString().substring(16, 24)%></p>
-            <p><strong>Arrival Time:</strong> <%=train.departure_time.toString().substring(16, 24)%></p>
-            <p><strong>From:</strong> <%=ticket.from%></p>
-            <p><strong>To:</strong> <%=ticket.to%></p>
-            <p><strong>Price:</strong> <%=train.price%></p>
+            <p><strong>Train Name:</strong> <%=train[i].tname%></p>
+            <p><strong>Departure Time:</strong> <%=train[i].arrival_time.toString().substring(16, 24)%></p>
+            <p><strong>Arrival Time:</strong> <%=train[i].departure_time.toString().substring(16, 24)%></p>
+            
+            <p><strong>From:</strong> <%=ticket[i].dataValues.from%></p>
+            <p><strong>To:</strong> <%=ticket[i].dataValues.to%></p>
+            <p><strong>Price:</strong> <%=ticket[i].dataValues.totalPrice%></p>
             
             
-            <p><strong>Book Date:</strong> <%=ticket.date%></p>
-            <p><strong>Book Time:</strong> <%=ticket.time%></p>
+            <p><strong>Book Date:</strong> <%=ticket[i].dataValues.date%></p>
+            <p><strong>Book Time:</strong> <%=ticket[i].dataValues.time%></p>
             <!-- Add more ticket details here -->
         </div>
         <button onclick="window.print()">Print Ticket</button>
     </div>
+    <%}%>
 
 </body>
 </html>

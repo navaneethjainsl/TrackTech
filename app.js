@@ -189,6 +189,10 @@ const Ticket = sequelize.define("ticket", {
     to: {
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    totalPrice:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
     }
 },
 
@@ -363,34 +367,59 @@ app.post('/trains', (req, res) => {
 app.post('/payment', (req, res) => {
     console.log("req.body");
     console.log(req.body);
-    res.render('payment', {details: req.body});
+    
+    let tickets = 1;
+    // let totalPrice = {totalPrice: req.body.price * tickets};
+
+    const details = {
+        ...req.body,
+        ...{tickets: tickets},
+    }
+
+    console.log("details");
+    console.log(details);
+    
+    res.render('payment', {details: details});
 });
 
-app.get('/display', (req, res) => {
-    Ticket.findOne({
-        where: {
-            passenger_id : 1
-        }
-    })
-    .then(async (ticket) => {
-        console.log(ticket);
-
-        Train.findOne({
+app.get('/display', async (req, res) => {
+    let trainList = [], ticketsList;
+    
+    sequelize.sync().then(async () => {
+        await Ticket.findAll({
             where: {
-                train_id : ticket.train_id
+                passenger_id : 1
             }
         })
-        .then(async (train) => {
-            console.log(train);
-        
-            res.render('ticket_details', {ticket: ticket, train: train});
+        .then(async (tickets) => {
+            console.log("tickets");
+            console.log(tickets);
+            ticketsList = tickets;
             
-        }).catch((error) => {
+            
+            const trainPromises = tickets.map(async (ticket) => {
+                const train = await Train.findOne({
+                    where: {
+                        train_id : ticket.train_id
+                    }
+                });
+                return train;
+            });
+    
+            const trainList = await Promise.all(trainPromises);
+
+            console.log("trainList");
+            console.log(trainList);
+            
+            res.render('ticket_details', {ticket: ticketsList, train: trainList});
+            
+        })
+        .catch((error) => {
             console.error('Failed to retrieve data : ', error);
         });
-        
-    }).catch((error) => {
-        console.error('Failed to retrieve data : ', error);
+    })
+    .catch((error) => {
+        console.error('Unable to coonnect : ', error);
     });
     
 });
@@ -403,56 +432,53 @@ app.post('/display', (req, res) => {
     console.log('req.body.details');
     console.log(details);
 
+    const seats = 1;
+    let capacity;
+
     sequelize.sync().then(async () => {
 
-        // Capacity.findOne({
-        //     where: {
-        //       capacity_id : req.body.tid
-        //     }
-        // }).then(async (user) => {
-        //     console.log(user);
+        await Capacity.findOne({
+            where: {
+              capacity_id : details.tid
+            }
+        })
+        .then(async (cap) => {
+            capacity = cap;
+            console.log("capacity");
+            console.log(capacity);
         
-        //     if(user && user.dataValues.password === req.body.password){
-        
-        //         await Login.create({
-        //         username: req.body.username,
-        //         start_time: new Date(),
-        //         end_time: new Date(),
-            
-        //         })
-            
-        //         res.redirect('/trainers');
-        //     }
-        //     else{
-        //         res.send('<h1>Incorrect username or password<h1>');
-        
-        //     }
-        // }).catch((error) => {
-        // console.error('Failed to retrieve data : ', error);
-        // });
-        
+            if(capacity.dataValues.available > 0){
+                const obj = {
+                    available: capacity.dataValues.available - seats,
+                    booked: capacity.dataValues.booked + seats,
+                }
 
-        // const obj = {
-        //     available: req.body.name,
-        //     booked: req.body.location,
-        //     rating: req.body.rating,
-        // }
-
-        // Trainer.update(
-        //     obj, 
-        //     {
-        //         where: {
-        //           trainer_id: req.body.trainerId
-        //         }
-        //     }
-        // ).then(() => {
-        //     console.log("Successfully updated record.")
-    
-        // }).catch((error) => {
-        //     console.error('Failed to update record : ', error);
-        // });
+                await Capacity.update(
+                    obj, 
+                    {
+                        where: {
+                          capacity_id: capacity.dataValues.capacity_id
+                        }
+                    }
+                ).then(() => {
+                    console.log("Successfully updated Capacity.")
+            
+                }).catch((error) => {
+                    console.error('Failed to update Capacity : ', error);
+                });
+            }
+            else{
+                res.send('<h1>No seats Left<h1>');
+            }
+        })
+        .catch((error) => {
+            console.error('Failed to retrieve data : ', error);
+        });
         
+        console.log("details.tid")
         console.log(details.tid)
+        console.log("capacity");
+        console.log(capacity);
 
         let now = new Date();
 
@@ -463,16 +489,36 @@ app.post('/display', (req, res) => {
 
         // Format the time as HH:MM:SS
         let currentTime = `${hours}:${minutes}:${seconds}`;
+
+        
+        
+        let train;
+        await Train.findOne({
+            where: {
+              train_id : details.tid
+            }
+        })
+        .then(async (tr) => {
+            train = tr;
+            console.log("train");
+            console.log(train);
+        
+            
+        })
+        .catch((error) => {
+            console.error('Failed to retrieve data : ', error);
+        });
         
         
         await Ticket.create({
             passenger_id: 1, //
             time: currentTime,
             date: now,
-            seat_no: 2, //
+            seat_no: capacity.dataValues.booked + 1, //
             train_id: details.tid,
             from: details.from,
             to: details.to,
+            totalPrice: details.tickets * train.dataValues.price,
         });
     
         res.redirect('/display');
