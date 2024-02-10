@@ -27,9 +27,6 @@ h1 {
 
 #background-container {
     background-image: url(../pics/5356913.jpg); /* Replace with your background image URL */
-
-    background-size: cover; /* Optional: Adjust background size */
-    background-attachment: fixed;
     
     background-size: cover;
     background-position: center;
