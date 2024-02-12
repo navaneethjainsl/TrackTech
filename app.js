@@ -349,16 +349,41 @@ app.post('/trains', (req, res) => {
         
         console.log(req.body);
     
-        sequelize.sync().then(() => {
-    
-            Train.findAll()
+        let capacity;
+        sequelize.sync().then(async() => {
+            
+            await Train.findAll()
             .then(async (trains) => {
                 console.log("trains");
                 console.log(trains);
                 console.log("trains[0].dataValues");
                 console.log(trains[0].dataValues);
+
+                const capacityPromises = trains.map(async (train) => {
+                    const capacity = await Capacity.findOne({
+                        where: {
+                            capacity_id : train.capacity_id
+                        }
+                    });
+                    return capacity;
+                });
+
+                const capacity = await Promise.all(capacityPromises);
+                console.log("capacity");
+                console.log(capacity);
         
-                res.render('train_display', {trains: trains, places: req.body});
+                // await Capacity.findAll()
+                // .then(async (cap) => {
+                //     capacity = cap;
+                //     console.log("capacity");
+                //     console.log(capacity);
+                
+                // })
+                // .catch((error) => {
+                //     console.error('Failed to retrieve data : ', error);
+                // });
+                
+                res.render('train_display', {trains: trains, places: req.body, capacity: capacity});
                 
             }).catch((error) => {
                 console.error('Failed to retrieve data from trains table\n Error : ', error);
@@ -379,8 +404,11 @@ app.post('/payment', (req, res) => {
     if(req.isAuthenticated()){
         console.log("req.body");
         console.log(req.body);
+
+        console.log("req.body.seats");
+        console.log(req.body.seats);
         
-        let tickets = 1;
+        let tickets = req.body.seats;
         // let totalPrice = {totalPrice: req.body.price * tickets};
     
         const details = {
@@ -510,7 +538,7 @@ app.post('/display', (req, res) => {
         console.log('req.body.details');
         console.log(details);
     
-        const seats = 1;
+        const seats = details.seats;
         let capacity;
     
         sequelize.sync().then(async () => {

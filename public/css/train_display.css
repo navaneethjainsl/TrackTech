@@ -7,8 +7,6 @@ body {
     padding: 0;
     font-family: Arial, sans-serif;
     background-image: url(../pics/Untitled\ design.png);
-    background-size: cover; /* Optional: Adjust background size */
-    background-attachment: fixed;
 }
 
 .train-container {
@@ -44,4 +42,26 @@ button{
     padding: 5px;
     background-color: rgb(142, 238, 142);
     border-radius: 5px;
+}
+.counter {
+    /* display: flex; */
+    align-items: center;
+}
+
+.counter button {
+    padding: 5px 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.counter input {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 50px;
+    text-align: center;
+    margin: 0 5px;
 }

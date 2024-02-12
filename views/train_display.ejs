@@ -19,37 +19,46 @@
                     <th>From</th>
                     <th>To</th>
                     <th>Price</th>
+                    <th>Seats Available</th>
+                    <th>No. of seats</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- Example train rows -->
-                <%trains.forEach((train) => {%>
+                <%for(let i = 0; i < trains.length; i++) {%>
                     <form action="/payment" method="post">
                         <tr>
-                            <td><%=train.dataValues.tname%></td>
-                            <td><%=train.dataValues.arrival_time.toString().substring(16, 24)%></td>
-                            <td><%=train.dataValues.departure_time.toString().substring(16, 24)%></td>
+                            <td><%=trains[0].dataValues.tname%></td>
+                            <td><%=trains[0].dataValues.arrival_time.toString().substring(16, 24)%></td>
+                            <td><%=trains[0].dataValues.departure_time.toString().substring(16, 24)%></td>
                             <td><%=places.from%></td>
                             <td><%=places.to%></td>
-                            <td><%=train.dataValues.price%></td>
+                            <td><%=trains[0].dataValues.price%></td>
+                            <td><%=capacity[0].dataValues.available%></td>
+                            <td class="counter">
+                                <input type="number" name="seats" class="seats" name="seats" value="1" required>
+                            </td>
 
-                            <input type="hidden" name="tid" value=<%=train.dataValues.train_id%>>
-                            <input type="hidden" name="arrival_date" value=<%=JSON.stringify(train.dataValues.arrival_time)%>>
-                            <input type="hidden" name="departure_date" value=<%=JSON.stringify(train.dataValues.departure_time)%>>
+                            <input type="hidden" name="tid" value=<%=trains[0].dataValues.train_id%>>
+                            <input type="hidden" name="arrival_date" value=<%=JSON.stringify(trains[0].dataValues.arrival_time)%>>
+                            <input type="hidden" name="departure_date" value=<%=JSON.stringify(trains[0].dataValues.departure_time)%>>
                             <input type="hidden" name="from" value=<%=places.from%>>
                             <input type="hidden" name="to" value=<%=places.to%>>
-                            <input type="hidden" name="price" value=<%=train.dataValues.price%>>
+                            <input type="hidden" name="price" value=<%=trains[0].dataValues.price%>>
+                            <input type="hidden" name="capacity" value=<%=capacity[0].dataValues.available%>>
                             
                             <td><button>Pay</button></td>
                             
                         </tr>
                     </form>
-                <%})%>
+                <%}%>
                 <!-- Add more train rows here -->
             </tbody>
         </table>
     </div>
+
+    <script src="js/train_display.js"></script>
 
 </body>
 </html>
