@@ -3,6 +3,9 @@ const ejs = require("ejs");
 const bodyParser = require('body-parser');
 const {Sequelize, DataTypes} = require("sequelize");
 const dotenv = require('dotenv/config');
+const session = require('express-session');
+const passport = require('passport');
+const {Strategy} = require('passport-local');
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -10,6 +13,17 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
+app.use(
+    session({
+        secret: "TOPSECRETWORD",
+        resave: false,
+        saveUninitialised: true,
+    })
+)
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 const sequelize = new Sequelize(
     process.env.DATABASE,
@@ -248,46 +262,11 @@ app.get('/login', async (req, res)=>{
 
 
 // Login User
-app.post('/login', async (req, res)=>{
-    // console.log("req.body");
-    // console.log(req.body);
+app.post('/login', passport.authenticate("local", {
+    successRedirect: '/home',
+    failureRedirect: '/login'
+}));
 
-    sequelize.sync().then(() => {
-  
-        Passenger.findOne({
-            where: {
-                username : req.body.username
-            }
-        }).then(async (user) => {
-        console.log("user");
-        console.log(user);
-        console.log("user.dataValues");
-        console.log(user.dataValues);
-  
-        if(user && user.dataValues.password === req.body.password){
-  
-          await Login.create({
-            p_id: user.dataValues.p_id,
-            start_time: new Date(),
-            // start_time: new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata' }),
-        
-          });
-        
-          res.redirect('/home');
-        }
-        else{
-          res.send('<h1>Incorrect username or password<h1>');
-  
-        }
-      }).catch((error) => {
-        console.error('Failed to retrieve data : ', error);
-      });
-  
-    }).catch((error) => {
-      console.error('Unable to create table : ', error);
-    });
-    
-});
 
 app.get('/signup', (req, res) => {
     res.render('signup');
@@ -295,241 +274,417 @@ app.get('/signup', (req, res) => {
 
 app.post('/signup', (req, res) => {
     sequelize.sync().then(async () => {
-        
-        await Passenger.create({
+        let details = {
             name: req.body.name,
             username: req.body.username,
             email: req.body.email,
             password: req.body.password,
             ph_no: req.body.ph_no,
             dob: req.body.dob,
-    
-        });
-    
+            
+        };
+        
+        await Passenger.create(details);
+        
+        // details = {
+        //     ...details,
+        //     ...{expiry: now.getTime() + expirationTime * 1000}
+        // }
+        // localStorage.setItem("Credentials", JSON.stringify(details));
+
         res.redirect('/login');
   
     }).catch((error) => {
         console.error('Unable to create user : ', error);
+        console.log('-------------------------------------------- ');
+        res.redirect('/signup');
     });
 });
 
 app.get('/home', (req, res) => {
-    res.render('home');
+    console.log("req.user");
+    console.log(req.user);
+    
+    if(req.isAuthenticated()){
+        res.render('home');
+    }
+    else{
+        res.redirect('/login');
+    }
 });
 
 app.get('/stations', (req, res) => {
 
-    sequelize.sync().then(() => {
-  
-        Station.findAll()
-        .then(async (stations) => {
-            console.log("stations");
-            console.log(stations);
-            console.log("stations[0].dataValues");
-            console.log(stations[0].dataValues);
-    
-            res.render('search_trains', {stations: stations});
-            
+    if(req.isAuthenticated()){
+        sequelize.sync().then(() => {
+      
+            Station.findAll()
+            .then(async (stations) => {
+                console.log("stations");
+                console.log(stations);
+                console.log("stations[0].dataValues");
+                console.log(stations[0].dataValues);
+        
+                res.render('search_trains', {stations: stations});
+                
+            }).catch((error) => {
+                console.error('Failed to retrieve data from stations table\n Error : ', error);
+            });
+      
         }).catch((error) => {
-            console.error('Failed to retrieve data from stations table\n Error : ', error);
+          console.error('Unable to sync with database \nError : ', error);
         });
-  
-    }).catch((error) => {
-      console.error('Unable to sync with database \nError : ', error);
-    });
+    }
+    else{
+        res.redirect('/login');
+    }
+
     
     
 });
 
 app.post('/trains', (req, res) => {
-    console.log(req.body);
 
-    sequelize.sync().then(() => {
-
-        Train.findAll()
-        .then(async (trains) => {
-            console.log("trains");
-            console.log(trains);
-            console.log("trains[0].dataValues");
-            console.log(trains[0].dataValues);
+    if(req.isAuthenticated()){
+        
+        console.log(req.body);
     
-            res.render('train_display', {trains: trains, places: req.body});
-            
+        sequelize.sync().then(() => {
+    
+            Train.findAll()
+            .then(async (trains) => {
+                console.log("trains");
+                console.log(trains);
+                console.log("trains[0].dataValues");
+                console.log(trains[0].dataValues);
+        
+                res.render('train_display', {trains: trains, places: req.body});
+                
+            }).catch((error) => {
+                console.error('Failed to retrieve data from trains table\n Error : ', error);
+            });
+      
         }).catch((error) => {
-            console.error('Failed to retrieve data from trains table\n Error : ', error);
+            console.error('Unable to sync with database \nError : ', error);
         });
-  
-    }).catch((error) => {
-        console.error('Unable to sync with database \nError : ', error);
-    });
+    }
+    else{
+        res.redirect('/login');
+    }
+    
 });
 
 app.post('/payment', (req, res) => {
-    console.log("req.body");
-    console.log(req.body);
-    
-    let tickets = 1;
-    // let totalPrice = {totalPrice: req.body.price * tickets};
 
-    const details = {
-        ...req.body,
-        ...{tickets: tickets},
+    if(req.isAuthenticated()){
+        console.log("req.body");
+        console.log(req.body);
+        
+        let tickets = 1;
+        // let totalPrice = {totalPrice: req.body.price * tickets};
+    
+        const details = {
+            ...req.body,
+            ...{tickets: tickets},
+        }
+    
+        console.log("details");
+        console.log(details);
+        
+        res.render('payment', {details: details});
+        
     }
-
-    console.log("details");
-    console.log(details);
+    else{
+        res.redirect('/login');
+    }
     
-    res.render('payment', {details: details});
 });
 
 app.get('/display', async (req, res) => {
-    let trainList = [], ticketsList;
-    
-    sequelize.sync().then(async () => {
-        await Ticket.findAll({
-            where: {
-                passenger_id : 1
-            }
-        })
-        .then(async (tickets) => {
-            console.log("tickets");
-            console.log(tickets);
-            ticketsList = tickets;
-            
-            
-            const trainPromises = tickets.map(async (ticket) => {
-                const train = await Train.findOne({
-                    where: {
-                        train_id : ticket.train_id
-                    }
-                });
-                return train;
-            });
-    
-            const trainList = await Promise.all(trainPromises);
 
-            console.log("trainList");
-            console.log(trainList);
-            
-            res.render('ticket_details', {ticket: ticketsList, train: trainList});
-            
+    if(req.isAuthenticated()){
+        let ticketsList;
+        
+        sequelize.sync().then(async () => {
+            await Ticket.findAll({
+                where: {
+                    passenger_id : req.user.p_id,
+                }
+            })
+            .then(async (tickets) => {
+                console.log("tickets");
+                console.log(tickets);
+                ticketsList = tickets;
+                
+                
+                const trainPromises = tickets.map(async (ticket) => {
+                    const train = await Train.findOne({
+                        where: {
+                            train_id : ticket.train_id
+                        }
+                    });
+                    return train;
+                });
+        
+                const trainList = await Promise.all(trainPromises);
+    
+                console.log("trainList");
+                console.log(trainList);
+                
+                res.render('ticket_details', {ticket: ticketsList, train: trainList});
+                
+            })
+            .catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
         })
         .catch((error) => {
-            console.error('Failed to retrieve data : ', error);
+            console.error('Unable to coonnect : ', error);
         });
-    })
-    .catch((error) => {
-        console.error('Unable to coonnect : ', error);
-    });
+        
+    }
+    else{
+        res.redirect('/login');
+    }
+    
     
 });
 
-app.post('/display', (req, res) => {
-    console.log('req.body');
-    console.log(req.body);
+// app.get('/displayTicket', async (req, res) => {
+
+//     if(req.isAuthenticated()){
+//         let ticketsList;
+        
+//         sequelize.sync().then(async () => {
+//             await Ticket.findAll({
+//                 where: {
+//                     passenger_id : req.user.p_id,
+//                 }
+//             })
+//             .then(async (tickets) => {
+//                 console.log("tickets");
+//                 console.log(tickets);
+//                 ticketsList = tickets;
+                
+                
+//                 const trainPromises = tickets.map(async (ticket) => {
+//                     const train = await Train.findOne({
+//                         where: {
+//                             train_id : ticket.train_id
+//                         }
+//                     });
+//                     return train;
+//                 });
+        
+//                 const trainList = await Promise.all(trainPromises);
     
-    const details = JSON.parse(req.body.details);
-    console.log('req.body.details');
-    console.log(details);
+//                 console.log("trainList");
+//                 console.log(trainList);
+                
+//                 res.render('ticket_details', {ticket: [ticketsList[ticketsList - 1]], train: [trainList[ticketsList - 1]]});
+                
+//             })
+//             .catch((error) => {
+//                 console.error('Failed to retrieve data : ', error);
+//             });
+//         })
+//         .catch((error) => {
+//             console.error('Unable to coonnect : ', error);
+//         });
+        
+//     }
+//     else{
+//         res.redirect('/login');
+//     }
+    
+    
+// });
 
-    const seats = 1;
-    let capacity;
+app.post('/display', (req, res) => {
 
-    sequelize.sync().then(async () => {
-
-        await Capacity.findOne({
-            where: {
-              capacity_id : details.tid
-            }
-        })
-        .then(async (cap) => {
-            capacity = cap;
+    if(req.isAuthenticated()){
+        console.log('req.body');
+        console.log(req.body);
+        
+        const details = JSON.parse(req.body.details);
+        console.log('req.body.details');
+        console.log(details);
+    
+        const seats = 1;
+        let capacity;
+    
+        sequelize.sync().then(async () => {
+    
+            await Capacity.findOne({
+                where: {
+                  capacity_id : details.tid
+                }
+            })
+            .then(async (cap) => {
+                capacity = cap;
+                console.log("capacity");
+                console.log(capacity);
+            
+                if(capacity.dataValues.available > 0){
+                    const obj = {
+                        available: capacity.dataValues.available - seats,
+                        booked: capacity.dataValues.booked + seats,
+                    }
+    
+                    await Capacity.update(
+                        obj, 
+                        {
+                            where: {
+                              capacity_id: capacity.dataValues.capacity_id
+                            }
+                        }
+                    ).then(() => {
+                        console.log("Successfully updated Capacity.")
+                
+                    }).catch((error) => {
+                        console.error('Failed to update Capacity : ', error);
+                    });
+                }
+                else{
+                    res.send('<h1>No seats Left<h1>');
+                }
+            })
+            .catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+            
+            console.log("details.tid")
+            console.log(details.tid)
             console.log("capacity");
             console.log(capacity);
-        
-            if(capacity.dataValues.available > 0){
-                const obj = {
-                    available: capacity.dataValues.available - seats,
-                    booked: capacity.dataValues.booked + seats,
-                }
-
-                await Capacity.update(
-                    obj, 
-                    {
-                        where: {
-                          capacity_id: capacity.dataValues.capacity_id
-                        }
-                    }
-                ).then(() => {
-                    console.log("Successfully updated Capacity.")
-            
-                }).catch((error) => {
-                    console.error('Failed to update Capacity : ', error);
-                });
-            }
-            else{
-                res.send('<h1>No seats Left<h1>');
-            }
-        })
-        .catch((error) => {
-            console.error('Failed to retrieve data : ', error);
-        });
-        
-        console.log("details.tid")
-        console.log(details.tid)
-        console.log("capacity");
-        console.log(capacity);
-
-        let now = new Date();
-
-        // Get the current time components
-        let hours = now.getHours().toString().padStart(2, '0'); // Get hours and pad with leading zero if necessary
-        let minutes = now.getMinutes().toString().padStart(2, '0'); // Get minutes and pad with leading zero if necessary
-        let seconds = now.getSeconds().toString().padStart(2, '0'); // Get seconds and pad with leading zero if necessary
-
-        // Format the time as HH:MM:SS
-        let currentTime = `${hours}:${minutes}:${seconds}`;
-
-        
-        
-        let train;
-        await Train.findOne({
-            where: {
-              train_id : details.tid
-            }
-        })
-        .then(async (tr) => {
-            train = tr;
-            console.log("train");
-            console.log(train);
-        
-            
-        })
-        .catch((error) => {
-            console.error('Failed to retrieve data : ', error);
-        });
-        
-        
-        await Ticket.create({
-            passenger_id: 1, //
-            time: currentTime,
-            date: now,
-            seat_no: capacity.dataValues.booked + 1, //
-            train_id: details.tid,
-            from: details.from,
-            to: details.to,
-            totalPrice: details.tickets * train.dataValues.price,
-        });
     
-        res.redirect('/display');
-  
-    }).catch((error) => {
-        console.error('Unable to create user : ', error);
-    });
+            let now = new Date();
+    
+            // Get the current time components
+            let hours = now.getHours().toString().padStart(2, '0'); // Get hours and pad with leading zero if necessary
+            let minutes = now.getMinutes().toString().padStart(2, '0'); // Get minutes and pad with leading zero if necessary
+            let seconds = now.getSeconds().toString().padStart(2, '0'); // Get seconds and pad with leading zero if necessary
+    
+            // Format the time as HH:MM:SS
+            let currentTime = `${hours}:${minutes}:${seconds}`;
+    
+            
+            
+            let train;
+            await Train.findOne({
+                where: {
+                  train_id : details.tid
+                }
+            })
+            .then(async (tr) => {
+                train = tr;
+                console.log("train");
+                console.log(train);
+            
+                
+            })
+            .catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+            
+            
+            await Ticket.create({
+                passenger_id: req.user.p_id, //
+                time: currentTime,
+                date: now,
+                seat_no: capacity.dataValues.booked + 1, //
+                train_id: details.tid,
+                from: details.from,
+                to: details.to,
+                totalPrice: details.tickets * train.dataValues.price,
+            });
+        
+            res.redirect('/display');
+      
+        }).catch((error) => {
+            console.error('Unable to create user : ', error);
+        });
+        
+    }
+    else{
+        res.redirect('/login');
+    }
+    
+    
 })
 
 app.get('/bus', (req, res) => {
-    res.redirect('https://www.redbus.in/');
+    if(req.isAuthenticated()){
+        res.redirect('https://www.redbus.in/');
+    }
+    else{
+        res.redirect('/login');
+    }
+    
+});
+
+
+passport.use(new Strategy(
+    async function(username, password, cb) {
+        
+        // console.log("req.body");
+        // console.log(req.body);
+        let expirationTime = 300; //5 minutes
+        
+        sequelize.sync().then(() => {
+  
+            Passenger.findOne({
+                where: {
+                    username : username
+                }
+            }).then(async (user) => {
+            console.log("user");
+            console.log(user);
+            console.log("user.dataValues");
+            console.log(user.dataValues);
+      
+            if(user && user.dataValues.password === password){
+      
+                await Login.create({
+                    p_id: user.dataValues.p_id,
+                    start_time: new Date(),
+                    // start_time: new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata' }),
+                
+                });
+    
+                // user.dataValues = {
+                //     ...details,
+                //     ...{expiry: now.getTime() + expirationTime * 1000}
+                // }
+    
+                // localStorage.setItem("Credentials", JSON.stringify(user.dataValues));
+                
+                // res.redirect('/home');
+
+                return cb(null, user);
+            }
+            else{
+                // res.send('<h1>Incorrect username or password<h1>');
+                return cb('<h1>Incorrect username or password<h1>')
+      
+            }
+            })
+            .catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+      
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
+    }
+));
+
+passport.serializeUser((user, cb) => {
+    cb(null, user);
+});
+
+passport.deserializeUser((user, cb) => {
+    cb(null, user);
 });
 
 
