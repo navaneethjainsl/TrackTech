@@ -255,18 +255,15 @@ app.get('/', (req, res) => {
     // res.status(200).send('Hello World')
 });
 
-
 app.get('/login', async (req, res)=>{
     res.render('login');
 });
-
 
 // Login User
 app.post('/login', passport.authenticate("local", {
     successRedirect: '/home',
     failureRedirect: '/login'
 }));
-
 
 app.get('/signup', (req, res) => {
     res.render('signup');
@@ -306,7 +303,7 @@ app.get('/home', (req, res) => {
     console.log(req.user);
     
     if(req.isAuthenticated()){
-        res.render('home');
+        res.render('home', {options: [["Book Ticket", "stations"], ["View Ticket", "display"], ["Check Nearby Bus", "bus"]]});
     }
     else{
         res.redirect('/login');
@@ -649,6 +646,105 @@ app.get('/bus', (req, res) => {
         res.redirect('/login');
     }
     
+});
+
+app.get('/adminHome', (req, res) => {
+    if(req.isAuthenticated()){
+        res.render('home', {options: [["Trains", "admintrains"], ["Stations", "adminstations"], ["Capacity", "admincapacity"]]});
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+app.get('/admintrains', (req, res) => {
+    if(req.isAuthenticated()){
+        sequelize.sync().then(async() => {
+            
+            await Train.findAll()
+            .then(async (trains) => {
+                console.log("trains");
+                console.log(trains);
+                console.log("trains[0].dataValues");
+                console.log(trains[0].dataValues);
+                
+                res.render('admin_train', {trains: trains});
+                
+            }).catch((error) => {
+                console.error('Failed to retrieve data from trains table\n Error : ', error);
+            });
+      
+        }).catch((error) => {
+            console.error('Unable to sync with database \nError : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+app.post('/admintrains', (req, res) => {
+    if(req.isAuthenticated()){
+        console.log("req.body");
+        console.log(req.body);
+        
+        res.render('train', {train: req.body});
+    }
+    else{
+        res.redirect('/login');
+    }
+})
+
+app.get('/adminstations', (req, res) => {
+    if(req.isAuthenticated()){
+        sequelize.sync().then(async() => {
+            
+            await Station.findAll()
+            .then(async (stations) => {
+                console.log("stations");
+                console.log(stations);
+                console.log("stations[0].dataValues");
+                console.log(stations[0].dataValues);
+                
+                res.render('admin_station', {stations: stations});
+                
+            }).catch((error) => {
+                console.error('Failed to retrieve data from stations table\n Error : ', error);
+            });
+      
+        }).catch((error) => {
+            console.error('Unable to sync with database \nError : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+app.get('/admincapacity', (req, res) => {
+    if(req.isAuthenticated()){
+        sequelize.sync().then(async() => {
+            
+            await Capacity.findAll()
+            .then(async (capacities) => {
+                console.log("capacities");
+                console.log(capacities);
+                console.log("capacities[0].dataValues");
+                console.log(capacities[0].dataValues);
+                
+                res.render('admin_capacity', {capacities: capacities});
+                
+            }).catch((error) => {
+                console.error('Failed to retrieve data from capacities table\n Error : ', error);
+            });
+      
+        }).catch((error) => {
+            console.error('Unable to sync with database \nError : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
 });
 
 

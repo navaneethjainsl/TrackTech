@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="css/admin_capacity.css">
+</head>
+<body>
+
+    <div class="admin-panel">
+        <h2>Admin Panel</h2>
+        <div class="section">
+            <h3>Capacity Management</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <!-- <th>Train Number</th> -->
+                        <th>Capacity_id</th>
+                        <th>Available</th>
+                        <th>Booked</th>
+                        <th>Capacity_total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Add dynamically generated capacity data here -->
+                    <%capacities.forEach((capacity)=>{%>
+                        <form action="/admintrains" method="post">
+                            <tr>
+                                <!-- <td>12345</td> -->
+                                <td><%=capacity.capacity_id%></td>
+                                <td><%=capacity.available%></td>
+                                <td><%=capacity.booked%></td>
+                                <td><%=capacity.capacity_total%></td>
+                                <td><button>Edit</button></td>
+
+                                <input type="hidden" name="capacity_id" value="<%=train.capacity_id%>">
+                                <input type="hidden" name="available" value="<%=train.available%>">
+                                <input type="hidden" name="booked" value="<%=train.booked%>">
+                                <input type="hidden" name="capacity_total" value="<%=train.capacity_total%>">
+                            </tr>
+                        </form>
+                    <%});%>
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+        </div>
+        <!-- <div class="section">
+            <h3>Train Management</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Train Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Chandigarh Express</td>
+                        <td><button>Edit</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="section">
+            <h3>Station Management</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Station Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Chandigarh</td>
+                        <td><button>Edit</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div> -->
+
+</body>
+</html>

@@ -16,18 +16,18 @@
         <div class="options-container">
             <h2>Choose an Option</h2>
             <div class="option">
-                <form action="/stations" method="get">
-                    <button type="submit" class="option-link">Book Train Ticket</button>
+                <form action="<%=`/${options[0][1]}`%>" method="get">
+                    <button type="submit" class="option-link"><%=options[0][0]%></button>
                 </form>
             </div>
             <div class="option">
-                <form action="/display" method="get">
-                    <button type="submit" class="option-link">Check Ticket</button>
+                <form action="<%=`/${options[1][1]}`%>" method="get">
+                    <button type="submit" class="option-link"><%=options[1][0]%></button>
                 </form>
             </div>
             <div class="option">
-                <form action="/bus" method="get">
-                    <button type="submit" class="option-link">Check Nearby Bus</button>
+                <form action="<%=`/${options[2][1]}`%>" method="get">
+                    <button type="submit" class="option-link"><%=options[2][0]%></button>
                 </form>
             </div>
         </div>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Capacity Details</title>
+    <link rel="stylesheet" href="edit_capacity.css">
+</head>
+<body>
+
+    <div class="edit-capacity-form">
+        <h2>Edit Capacity Details</h2>
+        <form action="/update_capacity" method="post">
+            <div class="form-group">
+                <label for="capacity_id">Capacity ID:</label>
+                <input type="number" id="capacity_id" name="capacity_id" value="<%=capacity.capacity_id%>" required disabled>
+            </div>
+
+            <div class="form-group">
+                <label for="available">Available:</label>
+                <input type="number" id="available" name="available" value="<%=capacity.available%>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="booked">Booked:</label>
+                <input type="number" id="booked" name="booked" value="<%=capacity.booked%>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="total">Total Capacity:</label>
+                <input type="number" id="total" name="total" value="<%=capacity.total%>" required>
+            </div>
+
+            <button type="submit">Update</button>
+        </form>
+    </div>
+
+</body>
+</html>
