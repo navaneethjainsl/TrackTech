@@ -162,11 +162,57 @@ const Passenger = sequelize.define("passenger", {
         type: DataTypes.DATE,
         allowNull: true,
     },
+    access: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'user' // Specify the default value here
+    }
 },
 {
     tableName: 'passenger',
     timestamps: false
 });
+
+
+// const Admin = sequelize.define("admin", {
+//     a_id: {
+//         type: Sequelize.INTEGER,
+//         primaryKey: true,
+//         allowNull: false,
+//         autoIncrement: true,
+//     },
+//     name: {
+//         type: DataTypes.STRING,
+//         allowNull: false,
+//     },
+//     username: {
+//         type: DataTypes.STRING,
+//         allowNull: false,
+//         unique: true,
+//     },
+//     email: {
+//         type: DataTypes.STRING,
+//         allowNull: false,
+//         unique: true,
+//     },
+//     password: {
+//         type: DataTypes.STRING,
+//         allowNull: true,
+//     },
+//     ph_no: {
+//         type: DataTypes.STRING,
+//         allowNull: false,
+//         unique: true,
+//     },
+//     dob: {
+//         type: DataTypes.DATE,
+//         allowNull: true,
+//     },
+// },
+// {
+//     tableName: 'admin',
+//     timestamps: false
+// });
 
 
 const Ticket = sequelize.define("ticket", {
@@ -335,9 +381,7 @@ app.get('/stations', (req, res) => {
     else{
         res.redirect('/login');
     }
-
-    
-    
+ 
 });
 
 app.post('/trains', (req, res) => {
@@ -535,7 +579,7 @@ app.post('/display', (req, res) => {
         console.log('req.body.details');
         console.log(details);
     
-        const seats = details.seats;
+        const seats = Number(details.seats);
         let capacity;
     
         sequelize.sync().then(async () => {
@@ -649,7 +693,7 @@ app.get('/bus', (req, res) => {
 });
 
 app.get('/adminHome', (req, res) => {
-    if(req.isAuthenticated()){
+    if(req.isAuthenticated() && req.user.access === 'admin'){
         res.render('home', {options: [["Trains", "admintrains"], ["Stations", "adminstations"], ["Capacity", "admincapacity"]]});
     }
     else{
@@ -658,7 +702,7 @@ app.get('/adminHome', (req, res) => {
 });
 
 app.get('/admintrains', (req, res) => {
-    if(req.isAuthenticated()){
+    if(req.isAuthenticated() && req.user.access === 'admin'){
         sequelize.sync().then(async() => {
             
             await Train.findAll()
@@ -684,7 +728,7 @@ app.get('/admintrains', (req, res) => {
 });
 
 app.post('/admintrains', (req, res) => {
-    if(req.isAuthenticated()){
+    if(req.isAuthenticated() && req.user.access === 'admin'){
         console.log("req.body");
         console.log(req.body);
         
@@ -693,10 +737,34 @@ app.post('/admintrains', (req, res) => {
     else{
         res.redirect('/login');
     }
-})
+});
+
+app.post('/updatetrain', (req, res) => {
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+        sequelize.sync().then(async () => {
+      
+            await Train.create({
+                train_id: req.user.train_id,
+                tname: req.user.tname,
+                capacity_id: req.user.capacity_id,
+                arrival_time: req.user.arrival_time,
+                departure_time: req.user.departure_time,
+                price: req.user.price,
+            });
+
+            res.redirect('/admintrain');
+      
+        }).catch((error) => {
+          console.error('Unable to sync with database \nError : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
 
 app.get('/adminstations', (req, res) => {
-    if(req.isAuthenticated()){
+    if(req.isAuthenticated() && req.user.access === 'admin'){
         sequelize.sync().then(async() => {
             
             await Station.findAll()
@@ -721,8 +789,40 @@ app.get('/adminstations', (req, res) => {
     }
 });
 
+app.post('/adminstations', (req, res) => {
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+        console.log("req.body");
+        console.log(req.body);
+        
+        res.render('station', {station: req.body});
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+app.post('/updatestation', (req, res) => {
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+        sequelize.sync().then(async () => {
+      
+            await Station.create({
+                id: req.user.id,
+                sname: req.user.sname,
+            });
+
+            res.redirect('/adminstation');
+      
+        }).catch((error) => {
+          console.error('Unable to sync with database \nError : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
 app.get('/admincapacity', (req, res) => {
-    if(req.isAuthenticated()){
+    if(req.isAuthenticated() && req.user.access === 'admin'){
         sequelize.sync().then(async() => {
             
             await Capacity.findAll()
@@ -740,6 +840,40 @@ app.get('/admincapacity', (req, res) => {
       
         }).catch((error) => {
             console.error('Unable to sync with database \nError : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+app.post('/admincapacity', (req, res) => {
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+        console.log("req.body");
+        console.log(req.body);
+        
+        res.render('capacity', {capacity: req.body});
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+app.post('/updatecapacity', (req, res) => {
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+        sequelize.sync().then(async () => {
+      
+            await Train.create({
+                capacity_id: req.user.capacity_id,
+                available: req.user.available,
+                booked: req.user.booked,
+                capacity_total: req.user.capacity_total,
+            });
+
+            res.redirect('/admincapacity');
+      
+        }).catch((error) => {
+          console.error('Unable to sync with database \nError : ', error);
         });
     }
     else{

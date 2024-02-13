@@ -80,3 +80,14 @@ input {
     color: blue;
     cursor: pointer;
 }
+
+#roles {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 10px;
+}

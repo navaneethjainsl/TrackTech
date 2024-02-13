@@ -26,7 +26,7 @@
                 <tbody>
                     <!-- Add dynamically generated capacity data here -->
                     <%capacities.forEach((capacity)=>{%>
-                        <form action="/admintrains" method="post">
+                        <form action="/admincapacity" method="post">
                             <tr>
                                 <!-- <td>12345</td> -->
                                 <td><%=capacity.capacity_id%></td>
@@ -35,10 +35,10 @@
                                 <td><%=capacity.capacity_total%></td>
                                 <td><button>Edit</button></td>
 
-                                <input type="hidden" name="capacity_id" value="<%=train.capacity_id%>">
-                                <input type="hidden" name="available" value="<%=train.available%>">
-                                <input type="hidden" name="booked" value="<%=train.booked%>">
-                                <input type="hidden" name="capacity_total" value="<%=train.capacity_total%>">
+                                <input type="hidden" name="capacity_id" value="<%=capacity.capacity_id%>">
+                                <input type="hidden" name="available" value="<%=capacity.available%>">
+                                <input type="hidden" name="booked" value="<%=capacity.booked%>">
+                                <input type="hidden" name="capacity_total" value="<%=capacity.capacity_total%>">
                             </tr>
                         </form>
                     <%});%>
