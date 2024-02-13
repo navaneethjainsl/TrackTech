@@ -37,7 +37,7 @@
                             <td><%=trains[i].dataValues.price%></td>
                             <td><%=capacity[i].dataValues.available%></td>
                             <td class="counter">
-                                <input type="number" name="seats" class="seats" name="seats" value="1" required>
+                                <input type="number" name="seats" class="seats" name="seats" min="1" max="<%=capacity[i].dataValues.available%>" value="1" required>
                             </td>
 
                             <input type="hidden" name="tid" value=<%=trains[i].dataValues.train_id%>>

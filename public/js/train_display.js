@@ -33,3 +33,8 @@ document.addEventListener("DOMContentLoaded", function() {
         seatsInput.addEventListener("change", updateAvailableSeats);
     });
 });
+
+
+function changed(){
+    console.log("changed");
+}
