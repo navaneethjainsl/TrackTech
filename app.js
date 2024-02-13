@@ -253,7 +253,12 @@ const Ticket = sequelize.define("ticket", {
     totalPrice:{
         type: DataTypes.INTEGER,
         allowNull: false,
-    }
+    },
+    num_seats:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1,
+    },
 },
 
 {
@@ -594,29 +599,29 @@ app.post('/display', (req, res) => {
                 console.log("capacity");
                 console.log(capacity);
             
-                if(capacity.dataValues.available > 0){
-                    const obj = {
-                        available: capacity.dataValues.available - seats,
-                        booked: capacity.dataValues.booked + seats,
-                    }
+                // if(capacity.dataValues.available > 0){
+                //     const obj = {
+                //         available: capacity.dataValues.available - seats,
+                //         booked: capacity.dataValues.booked + seats,
+                //     }
     
-                    await Capacity.update(
-                        obj, 
-                        {
-                            where: {
-                              capacity_id: capacity.dataValues.capacity_id
-                            }
-                        }
-                    ).then(() => {
-                        console.log("Successfully updated Capacity.")
+                //     await Capacity.update(
+                //         obj, 
+                //         {
+                //             where: {
+                //               capacity_id: capacity.dataValues.capacity_id
+                //             }
+                //         }
+                //     ).then(() => {
+                //         console.log("Successfully updated Capacity.")
                 
-                    }).catch((error) => {
-                        console.error('Failed to update Capacity : ', error);
-                    });
-                }
-                else{
-                    res.send('<h1>No seats Left<h1>');
-                }
+                //     }).catch((error) => {
+                //         console.error('Failed to update Capacity : ', error);
+                //     });
+                // }
+                // else{
+                //     res.send('<h1>No seats Left<h1>');
+                // }
             })
             .catch((error) => {
                 console.error('Failed to retrieve data : ', error);
@@ -649,8 +654,6 @@ app.post('/display', (req, res) => {
                 train = tr;
                 console.log("train");
                 console.log(train);
-            
-                
             })
             .catch((error) => {
                 console.error('Failed to retrieve data : ', error);
@@ -666,6 +669,7 @@ app.post('/display', (req, res) => {
                 from: details.from,
                 to: details.to,
                 totalPrice: details.tickets * train.dataValues.price,
+                num_seats: details.tickets,
             });
         
             res.redirect('/display');

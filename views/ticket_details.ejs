@@ -23,6 +23,7 @@
             <p><strong>To:</strong> <%=ticket[i].dataValues.to%></p>
             <p><strong>Price:</strong> <%=ticket[i].dataValues.totalPrice%></p>
             
+            <p><strong>Seat No:</strong> <%=ticket[i].dataValues.seat_no%> <%=(ticket[i].dataValues.num_seats > 1)? ` - ${ticket[i].dataValues.seat_no + ticket[i].dataValues.num_seats - 1}` : "" %></p>
             
             <p><strong>Book Date:</strong> <%=ticket[i].dataValues.date%></p>
             <p><strong>Book Time:</strong> <%=ticket[i].dataValues.time%></p>
