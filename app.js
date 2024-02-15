@@ -687,10 +687,6 @@ app.post('/display', (req, res) => {
     
 });
 
-// app.post('/print', (req, res) => {
-//     res.render('ticket_details', req.body);
-// });
-
 app.get('/bus', (req, res) => {
     if(req.isAuthenticated()){
         res.redirect('https://www.redbus.in/');
