@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Station Details</title>
-    <link rel="stylesheet" href="edit_station.css">
+    <link rel="stylesheet" href="/css/edit_station.css">
 </head>
 <body>
 
     <div class="edit-capacity-form">
         <h2>Edit Station Details</h2>
-        <form action="/update_station" method="post">
+        <form action="/updatestation" method="post">
            
 
             <div class="form-group">
                 <label for="id">Station_id:</label>
-                <input type="number" id="id" name="id" value="<%=station.id%>" required disabled>
+                <input type="number" id="id_temp" name="id_temp" value="<%=station.id%>" disabled>
+                <input type="hidden" id="id" name="id" value="<%=station.id%>" >
             </div>
 
             <div class="form-group">

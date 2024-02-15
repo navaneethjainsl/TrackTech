@@ -13,25 +13,38 @@
     </div>
 
     <%for(let i = ticket.length-1; i >= 0; i--){%>
-    <div class="ticket-details-container">
-        <div class="ticket-details">
-            <p><strong>Train Name:</strong> <%=train[i].tname%></p>
-            <p><strong>Departure Time:</strong> <%=train[i].arrival_time.toString().substring(16, 24)%></p>
-            <p><strong>Arrival Time:</strong> <%=train[i].departure_time.toString().substring(16, 24)%></p>
-            
-            <p><strong>From:</strong> <%=ticket[i].dataValues.from%></p>
-            <p><strong>To:</strong> <%=ticket[i].dataValues.to%></p>
-            <p><strong>Price:</strong> <%=ticket[i].dataValues.totalPrice%></p>
-            
-            <p><strong>Seat No:</strong> <%=ticket[i].dataValues.seat_no%> <%=(ticket[i].dataValues.num_seats > 1)? ` - ${ticket[i].dataValues.seat_no + ticket[i].dataValues.num_seats - 1}` : "" %></p>
-            
-            <p><strong>Book Date:</strong> <%=ticket[i].dataValues.date%></p>
-            <p><strong>Book Time:</strong> <%=ticket[i].dataValues.time%></p>
-            <!-- Add more ticket details here -->
-        </div>
-        <button onclick="window.print()">Print Ticket</button>
-    </div>
+        <!-- <form action="/print" method="post"> -->
+            <div>
+                <div class="ticket-details-container">
+                        <div class="ticket-details">
+                            <p><strong>Train Name:</strong> <%=train[i].tname%></p>
+                            <p><strong>Departure Time:</strong> <%=train[i].arrival_time.toString().substring(16, 24)%></p>
+                            <p><strong>Arrival Time:</strong> <%=train[i].departure_time.toString().substring(16, 24)%></p>
+                            
+                            <p><strong>From:</strong> <%=ticket[i].dataValues.from%></p>
+                            <p><strong>To:</strong> <%=ticket[i].dataValues.to%></p>
+                            <p><strong>Price:</strong> <%=ticket[i].dataValues.totalPrice%></p>
+                            
+                            <p><strong>Seat No:</strong> <%=ticket[i].dataValues.seat_no%> <%=(ticket[i].dataValues.num_seats > 1)? ` - ${ticket[i].dataValues.seat_no + ticket[i].dataValues.num_seats - 1}` : "" %></p>
+                            
+                            <p><strong>Book Date:</strong> <%=ticket[i].dataValues.date%></p>
+                            <p><strong>Book Time:</strong> <%=ticket[i].dataValues.time%></p>
+                            
+                            <input type="hidden" name="tname" value="<%=train[i].tname%>">
+                        </div>
+                    <button onclick="printInfo(this)">Print Ticket</button>
+                    <!-- <a href="#" onclick="printInfo(this)">Print</a> -->
+                    <!-- <button type="submit">Print Ticket</button> -->
+                </div>
+
+            </div>
+
+        <!-- </form> -->
     <%}%>
 
+
+    <script src="js/ticket_details.js"></script>
+
 </body>
+
 </html>

@@ -524,55 +524,56 @@ app.get('/display', async (req, res) => {
     
 });
 
-// app.get('/displayTicket', async (req, res) => {
+app.get('/displayTicket', async (req, res) => {
 
-//     if(req.isAuthenticated()){
-//         let ticketsList;
+    if(req.isAuthenticated()){
+        let ticket;
         
-//         sequelize.sync().then(async () => {
-//             await Ticket.findAll({
-//                 where: {
-//                     passenger_id : req.user.p_id,
-//                 }
-//             })
-//             .then(async (tickets) => {
-//                 console.log("tickets");
-//                 console.log(tickets);
-//                 ticketsList = tickets;
+        sequelize.sync().then(async () => {
+            await Ticket.findOne({
+                where: {
+                    passenger_id : req.user.p_id,
+                },
+                order: [['ticket_id', 'DESC']],
+            })
+            .then(async (tick) => {
+                console.log("tickets");
+                console.log(tick);
+                ticket = tick;
                 
                 
-//                 const trainPromises = tickets.map(async (ticket) => {
-//                     const train = await Train.findOne({
-//                         where: {
-//                             train_id : ticket.train_id
-//                         }
-//                     });
-//                     return train;
-//                 });
+                const train = await Train.findOne({
+                    where: {
+                        train_id : ticket.train_id
+                    }
+                });
+                // const trainPromises = tickets.map(async (ticket) => {
+                //     return train;
+                // });
         
-//                 const trainList = await Promise.all(trainPromises);
+                // const train = await Promise.all(trainPromises);
     
-//                 console.log("trainList");
-//                 console.log(trainList);
+                console.log("train");
+                console.log(train);
                 
-//                 res.render('ticket_details', {ticket: [ticketsList[ticketsList - 1]], train: [trainList[ticketsList - 1]]});
+                res.render('ticket_details', {ticket: [ticket], train: [train]});
                 
-//             })
-//             .catch((error) => {
-//                 console.error('Failed to retrieve data : ', error);
-//             });
-//         })
-//         .catch((error) => {
-//             console.error('Unable to coonnect : ', error);
-//         });
+            })
+            .catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        })
+        .catch((error) => {
+            console.error('Unable to coonnect : ', error);
+        });
         
-//     }
-//     else{
-//         res.redirect('/login');
-//     }
+    }
+    else{
+        res.redirect('/login');
+    }
     
     
-// });
+});
 
 app.post('/display', (req, res) => {
 
@@ -672,7 +673,7 @@ app.post('/display', (req, res) => {
                 num_seats: details.tickets,
             });
         
-            res.redirect('/display');
+            res.redirect('/displayTicket');
       
         }).catch((error) => {
             console.error('Unable to create user : ', error);
@@ -684,7 +685,11 @@ app.post('/display', (req, res) => {
     }
     
     
-})
+});
+
+// app.post('/print', (req, res) => {
+//     res.render('ticket_details', req.body);
+// });
 
 app.get('/bus', (req, res) => {
     if(req.isAuthenticated()){
@@ -746,17 +751,33 @@ app.post('/admintrains', (req, res) => {
 app.post('/updatetrain', (req, res) => {
     if(req.isAuthenticated() && req.user.access === 'admin'){
         sequelize.sync().then(async () => {
-      
-            await Train.create({
-                train_id: req.user.train_id,
-                tname: req.user.tname,
-                capacity_id: req.user.capacity_id,
-                arrival_time: req.user.arrival_time,
-                departure_time: req.user.departure_time,
-                price: req.user.price,
-            });
+            console.log(req.body);
 
-            res.redirect('/admintrain');
+            obj = {
+                train_id: req.body.train_id,
+                tname: req.body.tname,
+                capacity_id: req.body.capacity_id,
+                arrival_time: req.body.arrival_time,
+                departure_time: req.body.departure_time,
+                price: req.body.price,
+            }
+
+            await Train.update(
+                obj, 
+                {
+                    where: {
+                        train_id: req.body.train_id
+                    }
+                }
+            ).then(() => {
+                console.log("Successfully updated Train.")
+        
+            }).catch((error) => {
+                console.error('Failed to update Train : ', error);
+            });
+            
+
+            res.redirect('/admintrains');
       
         }).catch((error) => {
           console.error('Unable to sync with database \nError : ', error);
@@ -808,13 +829,27 @@ app.post('/adminstations', (req, res) => {
 app.post('/updatestation', (req, res) => {
     if(req.isAuthenticated() && req.user.access === 'admin'){
         sequelize.sync().then(async () => {
-      
-            await Station.create({
-                id: req.user.id,
-                sname: req.user.sname,
+
+            obj = {
+                id: req.body.id,
+                sname: req.body.sname,
+            }
+
+            await Station.update(
+                obj, 
+                {
+                    where: {
+                        id: req.body.id
+                    }
+                }
+            ).then(() => {
+                console.log("Successfully updated Station.")
+        
+            }).catch((error) => {
+                console.error('Failed to update Station : ', error);
             });
 
-            res.redirect('/adminstation');
+            res.redirect('/adminstations');
       
         }).catch((error) => {
           console.error('Unable to sync with database \nError : ', error);
@@ -866,12 +901,26 @@ app.post('/admincapacity', (req, res) => {
 app.post('/updatecapacity', (req, res) => {
     if(req.isAuthenticated() && req.user.access === 'admin'){
         sequelize.sync().then(async () => {
-      
-            await Train.create({
-                capacity_id: req.user.capacity_id,
-                available: req.user.available,
-                booked: req.user.booked,
-                capacity_total: req.user.capacity_total,
+
+            obj = {
+                capacity_id: req.body.capacity_id,
+                available: req.body.available,
+                booked: req.body.booked,
+                capacity_total: req.body.capacity_total,
+            }
+
+            await Capacity.update(
+                obj, 
+                {
+                    where: {
+                        capacity_id: req.body.capacity_id
+                    }
+                }
+            ).then(() => {
+                console.log("Successfully updated Capacity.")
+        
+            }).catch((error) => {
+                console.error('Failed to update Capacity : ', error);
             });
 
             res.redirect('/admincapacity');
