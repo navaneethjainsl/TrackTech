@@ -302,6 +302,11 @@ const Ticket = sequelize.define("ticket", {
         allowNull: false,
         defaultValue: 1,
     },
+    class:{
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'Sleeper',
+    },
 },
 
 {
@@ -618,7 +623,7 @@ app.post('/display', (req, res) => {
         console.log(details);
     
         const seats = Number(details.seats);
-        let capacity, seatNo;
+        let capacity, seatNo, tclass;
     
         sequelize.sync().then(async () => {
     
@@ -643,7 +648,7 @@ app.post('/display', (req, res) => {
                             booked_1A: Number(capacity.dataValues.booked_1A) + seats,
                         };
                         seatNo = Number(capacity.dataValues.booked_1A) + 1;
-                        console.log("class");
+                        tclass = "1A"; 
                         console.log(5);
                         break;
                         
@@ -652,7 +657,7 @@ app.post('/display', (req, res) => {
                             booked_2A: Number(capacity.dataValues.booked_2A) + seats,
                         };
                         seatNo = Number(capacity.dataValues.booked_2A) + 1;
-                        console.log("class");
+                        tclass = "2A";
                         console.log(4);
                         break;
                     case 3:
@@ -660,7 +665,7 @@ app.post('/display', (req, res) => {
                             booked_3A: Number(capacity.dataValues.booked_3A) + seats,
                         };
                         seatNo = Number(capacity.dataValues.booked_3A) + 1;
-                        console.log("class");
+                        tclass = "3A"; 
                         console.log(3);
                         break;
                         
@@ -669,7 +674,7 @@ app.post('/display', (req, res) => {
                             booked_ac: Number(capacity.dataValues.booked_ac) + seats,
                         };
                         seatNo = Number(capacity.dataValues.booked_ac) + 1;
-                        console.log("class");
+                        tclass = "AC"; 
                         console.log(2);
                         break;
                                 
@@ -678,7 +683,7 @@ app.post('/display', (req, res) => {
                             booked_sleeper: Number(capacity.dataValues.booked_sleeper) + seats,
                         };
                         seatNo = Number(capacity.dataValues.booked_sleeper) + 1;
-                        console.log("class");
+                        tclass = "Sleeper"; 
                         console.log(1);
                         break;
                 }
@@ -706,8 +711,8 @@ app.post('/display', (req, res) => {
             console.log(details.tid)
             console.log("capacity");
             console.log(capacity);
-            console.log("seatNo");
-            console.log(seatNo);
+            console.log("tclass");
+            console.log(tclass);
     
             let now = new Date();
     
@@ -747,6 +752,7 @@ app.post('/display', (req, res) => {
                 to: details.to,
                 totalPrice: Number(details.tickets) * Number(train.dataValues.price) * Number(details.class),
                 num_seats: details.tickets,
+                class: tclass,
             });
         
             res.redirect('/displayTicket');

@@ -18,14 +18,16 @@
                 <div class="ticket-details-container">
                         <div class="ticket-details">
                             <p><strong>Train Name:</strong> <%=train[i].tname%></p>
-                            <p><strong>Departure Time:</strong> <%=train[i].arrival_time%></p>
-                            <p><strong>Arrival Time:</strong> <%=train[i].departure_time%></p>
+                            <p><strong>Class:</strong> <%=ticket[i].dataValues.class%></p>
                             
                             <p><strong>From:</strong> <%=ticket[i].dataValues.from%></p>
                             <p><strong>To:</strong> <%=ticket[i].dataValues.to%></p>
                             <p><strong>Price:</strong> <%=ticket[i].dataValues.totalPrice%></p>
                             
                             <p><strong>Seat No:</strong> <%=ticket[i].dataValues.seat_no%> <%=(ticket[i].dataValues.num_seats > 1)? ` - ${ticket[i].dataValues.seat_no + ticket[i].dataValues.num_seats - 1}` : "" %></p>
+                            
+                            <p><strong>Departure Time:</strong> <%=train[i].arrival_time%></p>
+                            <p><strong>Arrival Time:</strong> <%=train[i].departure_time%></p>
                             
                             <p><strong>Book Date:</strong> <%=ticket[i].dataValues.date%></p>
                             <p><strong>Book Time:</strong> <%=ticket[i].dataValues.time%></p>
