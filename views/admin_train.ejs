@@ -23,14 +23,15 @@
                         <th>departure_time</th>
                         <th>Price</th>
                         <th>Action</th>
+                        <th>Action</th>
 
 
                     </tr>
                 </thead>
                 <tbody>
                     <%trains.forEach((train)=>{%>
-                        <form action="/admintrains" method="post">
-                            <tr>
+                        <tr>
+                            <form action="/admintrains" method="post">
                                 <!-- <td>12345</td> -->
                                 <td><%=train.train_id%></td>
                                 <td><%=train.tname%></td>
@@ -39,17 +40,19 @@
                                 <td><%=train.departure_time%></td>
                                 <td><%=train.price%></td>
                                 <td><button>Edit</button></td>
-
+                                
                                 <input type="hidden" name="train_id" value="<%=train.train_id%>">
                                 <input type="hidden" name="tname" value="<%=train.tname%>">
                                 <input type="hidden" name="capacity_id" value="<%=train.capacity_id%>">
                                 <input type="hidden" name="arrival_time" value="<%=train.arrival_time%>">
                                 <input type="hidden" name="departure_time" value="<%=train.departure_time%>">
                                 <input type="hidden" name="price" value="<%=train.price%>">
-
-                            </tr>
-
-                        </form>
+                                
+                            </form>
+                            <form action="/admintrains" method="delete">
+                                <td><button class="red">delete</button></td>
+                            </form>
+                        </tr>
                     <%});%>
                 </tbody>
             </table>

@@ -1,5 +1,5 @@
 *{
-    overflow: hidden;
+    overflow-y: hidden;
 }
 
 body {
@@ -10,7 +10,7 @@ body {
 }
 
 .train-container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 50px auto;
     padding: 20px;
     background-color: #f4f4f4;

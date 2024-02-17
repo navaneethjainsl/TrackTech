@@ -21,23 +21,39 @@
                     <th>Price</th>
                     <th>Seats Available</th>
                     <th>No. of seats</th>
+                    <th>Class</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- Example train rows -->
+                <input type="hidden" id="trains" name="trains" value="<%=JSON.stringify(trains)%>">
+                <input type="hidden" id="capacity" name="capacity" value="<%=JSON.stringify(capacity)%>">
+
                 <%for(let i = 0; i < trains.length; i++) {%>
                     <form action="/payment" method="post">
                         <tr>
                             <td><%=trains[i].dataValues.tname%></td>
-                            <td><%=trains[i].dataValues.arrival_time.toString().substring(16, 24)%></td>
-                            <td><%=trains[i].dataValues.departure_time.toString().substring(16, 24)%></td>
+                            <td><%=trains[i].dataValues.arrival_time%></td>
+                            <td><%=trains[i].dataValues.departure_time%></td>
                             <td><%=places.from%></td>
                             <td><%=places.to%></td>
-                            <td><%=trains[i].dataValues.price%></td>
-                            <td><%=capacity[i].dataValues.available%></td>
+                            <td id="<%=`price${i}`%>">--</td>
+                            <td id="<%=`capacity${i}`%>">--</td>
                             <td class="counter">
-                                <input type="number" name="seats" class="seats" name="seats" min="1" max="<%=capacity[i].dataValues.available%>" value="1" required>
+                                <input type="number" name="seats" class="seats" name="seats" min="1" max="" value="1" required>
+                            </td>
+                            <td>
+                                <select id="class" name="class" onchange="change('<%=JSON.stringify(trains[i].dataValues)%>', '<%=i%>'); " required>
+                                    <option value="" disabled selected>Class</option>
+                                    <option value="5">1A</option>//20
+                                    <option value="4">2A</option>//40*2
+                                    <option value="3">3A</option>//60*3
+                                    <option value="2">Ac Seating</option>//80*2
+                                    <option value="1">Sleeper</option>//120*3
+                                    <!-- 1:2:3:4:5 -->
+                                </select>
+
                             </td>
 
                             <input type="hidden" name="tid" value=<%=trains[i].dataValues.train_id%>>
@@ -45,10 +61,11 @@
                             <input type="hidden" name="departure_date" value=<%=JSON.stringify(trains[i].dataValues.departure_time)%>>
                             <input type="hidden" name="from" value=<%=places.from%>>
                             <input type="hidden" name="to" value=<%=places.to%>>
-                            <input type="hidden" name="price" value=<%=trains[i].dataValues.price%>>
-                            <input type="hidden" name="capacity" value=<%=capacity[i].dataValues.available%>>
+                            <input type="hidden" id="<%=`price${i}i`%>" name="price" value=0>
+                            <input type="hidden" id="<%=`capacity${i}i`%>" name="capacity" value=0>
                             
                             <td><button>Pay</button></td>
+                            
                             
                         </tr>
                     </form>

@@ -90,6 +90,49 @@ const Capacity = sequelize.define("capacity", {
     timestamps: false
 });
 
+const Capacities = sequelize.define("capacities", {
+    capacity_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    booked_1A: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    booked_2A: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    booked_3A: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    booked_ac: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    booked_sleeper: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    capacity_total: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    }
+},
+
+{
+    tableName: 'capacities',
+    timestamps: false
+});
+
 
 const Train = sequelize.define("train", {
     train_id: {
@@ -406,7 +449,7 @@ app.post('/trains', (req, res) => {
                 console.log(trains[0].dataValues);
 
                 const capacityPromises = trains.map(async (train) => {
-                    const capacity = await Capacity.findOne({
+                    const capacity = await Capacities.findOne({
                         where: {
                             capacity_id : train.capacity_id
                         }
@@ -417,17 +460,6 @@ app.post('/trains', (req, res) => {
                 const capacity = await Promise.all(capacityPromises);
                 console.log("capacity");
                 console.log(capacity);
-        
-                // await Capacity.findAll()
-                // .then(async (cap) => {
-                //     capacity = cap;
-                //     console.log("capacity");
-                //     console.log(capacity);
-                
-                // })
-                // .catch((error) => {
-                //     console.error('Failed to retrieve data : ', error);
-                // });
                 
                 res.render('train_display', {trains: trains, places: req.body, capacity: capacity});
                 
@@ -455,7 +487,7 @@ app.post('/payment', (req, res) => {
         console.log(req.body.seats);
         
         let tickets = req.body.seats;
-        // let totalPrice = {totalPrice: req.body.price * tickets};
+        // let totalPrice = {totalPrice: Number(req.body.price) * Number(tickets)};
     
         const details = {
             ...req.body,
@@ -586,11 +618,11 @@ app.post('/display', (req, res) => {
         console.log(details);
     
         const seats = Number(details.seats);
-        let capacity;
+        let capacity, seatNo;
     
         sequelize.sync().then(async () => {
     
-            await Capacity.findOne({
+            await Capacities.findOne({
                 where: {
                   capacity_id : details.tid
                 }
@@ -599,30 +631,72 @@ app.post('/display', (req, res) => {
                 capacity = cap;
                 console.log("capacity");
                 console.log(capacity);
-            
-                // if(capacity.dataValues.available > 0){
-                //     const obj = {
-                //         available: capacity.dataValues.available - seats,
-                //         booked: capacity.dataValues.booked + seats,
-                //     }
-    
-                //     await Capacity.update(
-                //         obj, 
-                //         {
-                //             where: {
-                //               capacity_id: capacity.dataValues.capacity_id
-                //             }
-                //         }
-                //     ).then(() => {
-                //         console.log("Successfully updated Capacity.")
+
+                let obj;
+                console.log("details.class")
+                console.log(details.class)
+                console.log("Number(details.class)")
+                console.log(Number(details.class))
+                switch(Number(details.class)){
+                    case 5:
+                        obj = {
+                            booked_1A: Number(capacity.dataValues.booked_1A) + seats,
+                        };
+                        seatNo = Number(capacity.dataValues.booked_1A) + 1;
+                        console.log("class");
+                        console.log(5);
+                        break;
+                        
+                    case 4:
+                        obj = {
+                            booked_2A: Number(capacity.dataValues.booked_2A) + seats,
+                        };
+                        seatNo = Number(capacity.dataValues.booked_2A) + 1;
+                        console.log("class");
+                        console.log(4);
+                        break;
+                    case 3:
+                        obj = {
+                            booked_3A: Number(capacity.dataValues.booked_3A) + seats,
+                        };
+                        seatNo = Number(capacity.dataValues.booked_3A) + 1;
+                        console.log("class");
+                        console.log(3);
+                        break;
+                        
+                    case 2:
+                        obj = {
+                            booked_ac: Number(capacity.dataValues.booked_ac) + seats,
+                        };
+                        seatNo = Number(capacity.dataValues.booked_ac) + 1;
+                        console.log("class");
+                        console.log(2);
+                        break;
+                                
+                    case 1:
+                        obj = {
+                            booked_sleeper: Number(capacity.dataValues.booked_sleeper) + seats,
+                        };
+                        seatNo = Number(capacity.dataValues.booked_sleeper) + 1;
+                        console.log("class");
+                        console.log(1);
+                        break;
+                }
                 
-                //     }).catch((error) => {
-                //         console.error('Failed to update Capacity : ', error);
-                //     });
-                // }
-                // else{
-                //     res.send('<h1>No seats Left<h1>');
-                // }
+
+                await Capacities.update(
+                    obj, 
+                    {
+                        where: {
+                        capacity_id: capacity.dataValues.capacity_id
+                        }
+                    }
+                ).then(() => {
+                    console.log("Successfully updated Capacity.")
+            
+                }).catch((error) => {
+                    console.error('Failed to update Capacity : ', error);
+                });
             })
             .catch((error) => {
                 console.error('Failed to retrieve data : ', error);
@@ -632,6 +706,8 @@ app.post('/display', (req, res) => {
             console.log(details.tid)
             console.log("capacity");
             console.log(capacity);
+            console.log("seatNo");
+            console.log(seatNo);
     
             let now = new Date();
     
@@ -662,20 +738,21 @@ app.post('/display', (req, res) => {
             
             
             await Ticket.create({
-                passenger_id: req.user.p_id, //
+                passenger_id: req.user.p_id,
                 time: currentTime,
                 date: now,
-                seat_no: capacity.dataValues.booked + 1, //
+                seat_no: seatNo,
                 train_id: details.tid,
                 from: details.from,
                 to: details.to,
-                totalPrice: details.tickets * train.dataValues.price,
+                totalPrice: Number(details.tickets) * Number(train.dataValues.price) * Number(details.class),
                 num_seats: details.tickets,
             });
         
             res.redirect('/displayTicket');
       
-        }).catch((error) => {
+        })
+        .catch((error) => {
             console.error('Unable to create user : ', error);
         });
         
@@ -784,6 +861,30 @@ app.post('/updatetrain', (req, res) => {
     }
 });
 
+app.delete('/admintrains',async (req, res) => {
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+
+        sequelize.sync().then(async() => {
+
+            await Train.destroy({
+                where: {
+                    train_id: req.body.train_id,
+                }
+            }).then(() => {
+                console.log("Successfully deleted record.")
+            }).catch((error) => {
+                console.error('Failed to delete record : ', error);
+            });
+
+        }).catch((error) => {
+            console.error('Unable to connect : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
 app.get('/adminstations', (req, res) => {
     if(req.isAuthenticated() && req.user.access === 'admin'){
         sequelize.sync().then(async() => {
@@ -856,6 +957,33 @@ app.post('/updatestation', (req, res) => {
     }
 });
 
+app.post('/deletestation',async (req, res) => {
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+        console.log('Delete adminstations');
+
+        sequelize.sync().then(async() => {
+
+            await Station.destroy({
+                where: {
+                    id: req.body.id,
+                }
+            }).then(() => {
+                console.log("Successfully deleted record.")
+            }).catch((error) => {
+                console.error('Failed to delete record : ', error);
+            });
+
+            res.redirect('/adminstations');
+
+        }).catch((error) => {
+            console.error('Unable to connect : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
 app.get('/admincapacity', (req, res) => {
     if(req.isAuthenticated() && req.user.access === 'admin'){
         sequelize.sync().then(async() => {
@@ -913,7 +1041,7 @@ app.post('/updatecapacity', (req, res) => {
                     }
                 }
             ).then(() => {
-                console.log("Successfully updated Capacity.")
+                console.log("Successfully updated Capacity")
         
             }).catch((error) => {
                 console.error('Failed to update Capacity : ', error);
@@ -923,6 +1051,30 @@ app.post('/updatecapacity', (req, res) => {
       
         }).catch((error) => {
           console.error('Unable to sync with database \nError : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+app.delete('/admincapacity',async (req, res) => {
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+
+        sequelize.sync().then(async() => {
+
+            await Train.destroy({
+                where: {
+                    capacity_id: req.body.capacity_id,
+                }
+            }).then(() => {
+                console.log("Successfully deleted record.")
+            }).catch((error) => {
+                console.error('Failed to delete record : ', error);
+            });
+
+        }).catch((error) => {
+            console.error('Unable to connect : ', error);
         });
     }
     else{

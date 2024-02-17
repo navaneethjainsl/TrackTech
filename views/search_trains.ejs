@@ -10,7 +10,7 @@
 
     <div class="search-container">
         <h2>Search Trains</h2>
-        <form action="/trains" method="post">
+        <form id="form" action="/trains" method="post">
             <div class="form-group">
                 <label for="from">From:</label>
                 <select id="from" name="from" required>
@@ -37,7 +37,9 @@
                 <input type="date" id="date" name="date" required>
             </div>
 
-            <button type="submit">Search</button>
         </form>
+        <button onclick="check();">Search</button>
     </div>
+    <script src="js/search_trains.js"></script>
 </body>
+</html>
