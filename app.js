@@ -1237,12 +1237,13 @@ passport.use(new Strategy(
             }
             else{
                 // res.send('<h1>Incorrect username or password<h1>');
-                return cb('<h1>Incorrect username or password<h1>')
-      
+                return cb('Incorrect username or password')
+                
             }
             })
             .catch((error) => {
                 console.error('Failed to retrieve data : ', error);
+                return cb('username does not exist')
             });
       
         }).catch((error) => {
