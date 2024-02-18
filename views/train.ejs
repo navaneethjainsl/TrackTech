@@ -10,36 +10,36 @@
 
     <div class="edit-capacity-form">
         <h2>Edit Train Details</h2>
-        <form action="/updatetrain" method="post">
+        <form action="<%=`/${action}`%>" method="post">
             <div class="form-group">
-                <label for="capacity-id">train_id:</label>
+                <label for="train_id">train_id:</label>
                 <input type="number" id="id" name="id" value="<%=train.train_id%>" disabled>
                 <input type="hidden" id="train_id" name="train_id" value="<%=train.train_id%>">
             </div>
 
             <div class="form-group">
-                <label for="available">tname:</label>
+                <label for="tname">tname:</label>
                 <input type="text" id="tname" name="tname" value="<%=train.tname%>" required>
             </div>
 
             <div class="form-group">
-                <label for="booked">capacity_id:</label>
+                <label for="capacity_id">capacity_id:</label>
                 <input type="number" id="capacity_id" name="capacity_id" value="<%=train.capacity_id%>" required>
             </div>
 
             <div class="form-group">
-                <label for="total">arrival_time:</label>
+                <label for="arrival_time">arrival_time:</label>
                 <input type="time" id="arrival_time" name="arrival_time" value="<%=train.arrival_time%>" required>
             </div>
 
             <div class="form-group">
-                <label for="total">departure_time:</label>
+                <label for="departure_time">departure_time:</label>
                 <input type="time" id="departure_time" name="departure_time" value="<%=train.departure_time%>" required>
             </div>
 
             
             <div class="form-group">
-                <label for="total">price:</label>
+                <label for="price">price:</label>
                 <input type="number" id="price" name="price" value="<%=train.price%>" required>
             </div>
 

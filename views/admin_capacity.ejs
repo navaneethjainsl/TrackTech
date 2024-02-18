@@ -16,12 +16,15 @@
                 <thead>
                     <tr>
                         <!-- <th>Train Number</th> -->
-                        <th>Capacity_id</th>
-                        <th>Available</th>
-                        <th>Booked</th>
-                        <th>Capacity_total</th>
+                        <th>Capacity Id</th>
+                        <th>Booked 1A</th>
+                        <th>Booked 2A</th>
+                        <th>Booked 3A</th>
+                        <th>Booked AC</th>
+                        <th>Booked Sleeper</th>
+                        <th>Total Capacity</th>
                         <th>Action</th>
-                        <th>Action</th>
+                        <!-- <th>Action</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -31,60 +34,34 @@
                             <form action="/admincapacity" method="post">
                                 <!-- <td>12345</td> -->
                                 <td><%=capacity.capacity_id%></td>
-                                <td><%=capacity.available%></td>
-                                <td><%=capacity.booked%></td>
+                                <td><%=capacity.booked_1A%></td>
+                                <td><%=capacity.booked_2A%></td>
+                                <td><%=capacity.booked_3A%></td>
+                                <td><%=capacity.booked_ac%></td>
+                                <td><%=capacity.booked_sleeper%></td>
                                 <td><%=capacity.capacity_total%></td>
                                 <td><button>Edit</button></td>
                                 
                                 <input type="hidden" name="capacity_id" value="<%=capacity.capacity_id%>">
-                                <input type="hidden" name="available" value="<%=capacity.available%>">
-                                <input type="hidden" name="booked" value="<%=capacity.booked%>">
+                                <input type="hidden" name="booked_1A" value="<%=capacity.booked_1A%>">
+                                <input type="hidden" name="booked_2A" value="<%=capacity.booked_2A%>">
+                                <input type="hidden" name="booked_3A" value="<%=capacity.booked_3A%>">
+                                <input type="hidden" name="booked_ac" value="<%=capacity.booked_ac%>">
+                                <input type="hidden" name="booked_sleeper" value="<%=capacity.booked_sleeper%>">
                                 <input type="hidden" name="capacity_total" value="<%=capacity.capacity_total%>">
                             </form>
-                            <form action="/admincapacity" method="delete">
-                                <td><button class="red">delete</button></td>
+                            <!-- <form id="<%=`deleteform${capacity.capacity_id}`%>" action="/deletecapacity" method="post">
+                                <input type="hidden" name="capacity_id" value="<%=capacity.capacity_id%>">
                             </form>
+                            <td><button onclick=<%=`deleteEntry(${capacity.capacity_id})`%> class="red">delete</button></td> -->
                         </tr>
                     <%});%>
                     <!-- Add more rows as needed -->
                 </tbody>
             </table>
         </div>
-        <!-- <div class="section">
-            <h3>Train Management</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Train Name</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Chandigarh Express</td>
-                        <td><button>Edit</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="section">
-            <h3>Station Management</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Station Name</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Chandigarh</td>
-                        <td><button>Edit</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div> -->
+
+        <script src="js/admin.js"></script>
 
 </body>
 </html>

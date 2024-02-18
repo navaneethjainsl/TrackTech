@@ -1,5 +1,5 @@
 body{
-    background-image: url(../public/pics/Untitled\ design.png);
+    background-image: url(../pics/Untitled\ design.png);
 
 }
 .admin-panel {
@@ -42,4 +42,19 @@ th {
 
 .red{
     color: red;
+}
+
+button#addstation {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #70dc74;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button#addstation:hover {
+    background-color: #45a049;
 }

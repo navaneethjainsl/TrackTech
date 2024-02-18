@@ -150,11 +150,11 @@ const Train = sequelize.define("train", {
         allowNull: false,
     },
     arrival_time: {
-        type: DataTypes.DATE,
+        type: DataTypes.TIME,
         allowNull: false,
     },
     departure_time: {
-        type: DataTypes.DATE,
+        type: DataTypes.TIME,
         allowNull: false,
     },
     price: {
@@ -820,7 +820,7 @@ app.post('/admintrains', (req, res) => {
         console.log("req.body");
         console.log(req.body);
         
-        res.render('train', {train: req.body});
+        res.render('train', {train: req.body, action: 'updatetrain'});
     }
     else{
         res.redirect('/login');
@@ -867,7 +867,60 @@ app.post('/updatetrain', (req, res) => {
     }
 });
 
-app.delete('/admintrains',async (req, res) => {
+app.get('/addtrain',async (req, res) => {
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+
+        sequelize.sync().then(async() => {
+
+            obj = {
+                train_id: '',
+                tname: '',
+                capacity_id: 0,
+                arrival_time: 0,
+                departure_time: 0,
+                price: 0,
+            }
+
+            res.render('train', {train: req.body, action: 'addtrain'});
+
+        }).catch((error) => {
+            console.error('Unable to connect : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+app.post('/addtrain',async (req, res) => {
+    console.log(req.body);
+    
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+
+        sequelize.sync().then(async() => {
+
+            obj = {
+                tname: req.body.tname,
+                capacity_id: req.body.capacity_id,
+                arrival_time: req.body.arrival_time,
+                departure_time: req.body.departure_time,
+                price: req.body.price,
+            }
+
+            await Train.create(obj)
+
+            res.redirect('/admintrains')
+
+        }).catch((error) => {
+            console.error('Unable to connect : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+app.post('/deletetrains',async (req, res) => {
     if(req.isAuthenticated() && req.user.access === 'admin'){
 
         sequelize.sync().then(async() => {
@@ -881,6 +934,8 @@ app.delete('/admintrains',async (req, res) => {
             }).catch((error) => {
                 console.error('Failed to delete record : ', error);
             });
+
+            res.redirect('/admintrains')
 
         }).catch((error) => {
             console.error('Unable to connect : ', error);
@@ -922,7 +977,7 @@ app.post('/adminstations', (req, res) => {
         console.log("req.body");
         console.log(req.body);
         
-        res.render('station', {station: req.body});
+        res.render('station', {station: req.body, action: 'updatestation'});
     }
     else{
         res.redirect('/login');
@@ -963,6 +1018,53 @@ app.post('/updatestation', (req, res) => {
     }
 });
 
+app.get('/addstation',async (req, res) => {
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+
+        sequelize.sync().then(async() => {
+
+            obj = {
+                
+                id: req.body.id,
+                sname: req.body.sname,
+            }
+
+            res.render('station', {station: req.body, action: 'addstation'});
+
+
+        }).catch((error) => {
+            console.error('Unable to connect : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+app.post('/addstation',async (req, res) => {
+    console.log(req.body);
+    
+    if(req.isAuthenticated() && req.user.access === 'admin'){
+
+        sequelize.sync().then(async() => {
+
+            obj = {
+                sname: req.body.sname,
+            }
+
+            await Station.create(obj)
+
+            res.redirect('/adminstations')
+
+        }).catch((error) => {
+            console.error('Unable to connect : ', error);
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
 app.post('/deletestation',async (req, res) => {
     if(req.isAuthenticated() && req.user.access === 'admin'){
         console.log('Delete adminstations');
@@ -994,7 +1096,7 @@ app.get('/admincapacity', (req, res) => {
     if(req.isAuthenticated() && req.user.access === 'admin'){
         sequelize.sync().then(async() => {
             
-            await Capacity.findAll()
+            await Capacities.findAll()
             .then(async (capacities) => {
                 console.log("capacities");
                 console.log(capacities);
@@ -1034,12 +1136,15 @@ app.post('/updatecapacity', (req, res) => {
 
             obj = {
                 capacity_id: req.body.capacity_id,
-                available: req.body.available,
-                booked: req.body.booked,
+                booked_1A: req.body.booked_1A,
+                booked_2A: req.body.booked_2A,
+                booked_3A: req.body.booked_3A,
+                booked_ac: req.body.booked_ac,
+                booked_sleeper: req.body.booked_sleeper,
                 capacity_total: req.body.capacity_total,
             }
 
-            await Capacity.update(
+            await Capacities.update(
                 obj, 
                 {
                     where: {
@@ -1064,12 +1169,12 @@ app.post('/updatecapacity', (req, res) => {
     }
 });
 
-app.delete('/admincapacity',async (req, res) => {
+app.post('/deletecapacity',async (req, res) => {
     if(req.isAuthenticated() && req.user.access === 'admin'){
 
         sequelize.sync().then(async() => {
 
-            await Train.destroy({
+            await Capacities.destroy({
                 where: {
                     capacity_id: req.body.capacity_id,
                 }
@@ -1078,6 +1183,8 @@ app.delete('/admincapacity',async (req, res) => {
             }).catch((error) => {
                 console.error('Failed to delete record : ', error);
             });
+
+            res.redirect('/admincapacity')
 
         }).catch((error) => {
             console.error('Unable to connect : ', error);

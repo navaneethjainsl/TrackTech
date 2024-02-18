@@ -4,7 +4,7 @@ function check(){
     let form = document.getElementById('form');
     
     if(from === to){
-        alert('From and to cannot be same');
+        alert('Source and Destination cannot be same');
     }
     else{
         form.submit();

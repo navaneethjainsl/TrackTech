@@ -43,3 +43,18 @@ th {
 .red{
     color: red;
 }
+
+button#addtrain {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #70dc74;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button#addtrain:hover {
+    background-color: #45a049;
+}

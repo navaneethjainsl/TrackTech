@@ -39,8 +39,7 @@
                                 <td><%=train.arrival_time%></td>
                                 <td><%=train.departure_time%></td>
                                 <td><%=train.price%></td>
-                                <td><button>Edit</button></td>
-                                
+
                                 <input type="hidden" name="train_id" value="<%=train.train_id%>">
                                 <input type="hidden" name="tname" value="<%=train.tname%>">
                                 <input type="hidden" name="capacity_id" value="<%=train.capacity_id%>">
@@ -48,50 +47,23 @@
                                 <input type="hidden" name="departure_time" value="<%=train.departure_time%>">
                                 <input type="hidden" name="price" value="<%=train.price%>">
                                 
+                                <td><button>Edit</button></td>
+                                
                             </form>
-                            <form action="/admintrains" method="delete">
-                                <td><button class="red">delete</button></td>
+                            <form id="<%=`deleteform${train.train_id}`%>" action="/deletetrains" method="post" >
+                                <input type="hidden" name="train_id" value="<%=train.train_id%>">
                             </form>
+                            <td><button class="red" onclick=<%=`deleteEntry(${train.train_id})`%>>delete</button></td>
                         </tr>
                     <%});%>
                 </tbody>
             </table>
+            <form action="/addtrain" method="get">
+                <button id="addtrain">Add Trains</button>
+            </form>
         </div>
-        <!-- <div class="section">
-            <h3>Train Management</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Train Name</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Chandigarh Express</td>
-                        <td><button>Edit</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="section">
-            <h3>Station Management</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Station Name</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Chandigarh</td>
-                        <td><button>Edit</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div> -->
+
+        <script src="js/admin.js"></script>
 
 </body>
 </html>
